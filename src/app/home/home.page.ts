@@ -1,7 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular';
+import { BossWithDuration } from '../models/gw-boss.model';
 import { WorldBossTimerService } from '../services/world-boss-timer.service';
+import { BossPage } from '../boss/boss.page';
 
 @Component({
   selector: 'app-home',
@@ -20,21 +22,14 @@ import { WorldBossTimerService } from '../services/world-boss-timer.service';
       </ion-header>
 
       @if (events() !== null) {
-        <ul>
-          @for (event of encounters(); track event.boss.id) {
-            <li>{{ event.boss.name }}</li>
+        <ol>
+          @for (event of encounters(); track $index) {
+            <li class="boss-item">
+              <app-boss [boss]="event.boss"></app-boss>
+            </li>
           }
-        </ul>
+        </ol>
       }
-
-      <div id="container">
-        <strong>World boss timer scaffold</strong>
-        <p>
-          Ionic Angular app is ready on Firebase project
-          <code>gw2-world-boss-timer</code>. Schedule engine and timer UI land
-          in later PRs.
-        </p>
-      </div>
     </ion-content>
   `,
   styles: [
@@ -66,9 +61,12 @@ import { WorldBossTimerService } from '../services/world-boss-timer.service';
       #container a {
         text-decoration: none;
       }
+      .boss-item {
+        margin-bottom: 16px;
+      }
     `,
   ],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, BossPage],
 })
 export class HomePage {
   private worldBossTimerService = inject(WorldBossTimerService);
@@ -76,5 +74,8 @@ export class HomePage {
   events = toSignal(this.worldBossTimerService.getBossSequence(), {
     initialValue: null,
   });
-  encounters = computed(() => this.events()?.encounters || []);
+  encounters = computed((): BossWithDuration[] => {
+    const sequence = this.events()?.encounters ?? [];
+    return [...sequence, ...sequence, ...sequence, ...sequence];
+  });
 }
