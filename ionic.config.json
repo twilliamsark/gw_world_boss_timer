@@ -1,0 +1,7 @@
+{
+  "name": "GW2 World Bosses",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

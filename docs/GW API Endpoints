@@ -1,0 +1,75 @@
+curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/characters"
+
+curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/characters/Tar%20Glock/equipment"
+
+  curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/items/10686"
+
+    curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/items/70450"
+
+  curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/characters/Tar%20Glock/core"
+
+  curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/account/wizardsvault/daily"
+
+    curl -sS \
+  -H "Authorization: Bearer 34AB02A5-1318-BA42-BACD-D7009D07F6BFB4646572-7189-4C82-9BED-43A95BEE71D9" \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  "https://api.guildwars2.com/v2/account/worldbosses"
+
+  curl -sS \
+  "https://api.guildwars2.com/v2/worldbosses"
+
+curl -sS \
+  -H "X-Schema-Version: 2021-07-15T13:00:00.000Z" \
+  -H "Accept: application/json, text/plain, */*" \
+  "https://wiki.guildwars2.com/index.php?title=Widget:Event_timer/data.json&action=raw"
+
+
+// something like this for VPN problems
+-H "User-Agent: (e.g., MyGuildWars2App/1.0 (contact@email.com))" \ 
+
+curl -sS "http://localhost:3000"
+
+https://wiki.guildwars2.com/api.php?action=query
+  &format=json
+  &exintro=true
+  &explaintext=true
+  &titles=Defeat_the_great_jungle_wurm
+
+
+
+https://wiki.guildwars2.com/api.php?action=query
+  &format=json
+  &prop=info%7Cextracts%7Cpageimages%7Crevisions%7Cinfo
+  &formatversion=2
+  &redirects=true
+  &exintro=true
+  &exchars=525
+  &explaintext=true
+  &exsectionformat=plain
+  &piprop=thumbnail
+  &pithumbsize=640
+  &pilicense=any
+  &rvprop=timestamp
+  &inprop=url
+  &titles=Defeat_the_great_jungle_wurm
+  &smaxage=300
+  &maxage=300
+  &uselang=content

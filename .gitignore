@@ -1,0 +1,39 @@
+# Ionic / Angular
+/.angular
+/.idea
+/.ionic
+/.sass-cache
+/.sourcemaps
+/.versions
+/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+/coverage
+/dist
+/node_modules
+/platforms
+/plugins
+/www
+*.log
+*.sw*
+.DS_Store
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firebase-debug.*.log*
+.dataconnect
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / tooling
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+*.tgz
