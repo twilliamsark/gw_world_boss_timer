@@ -1,8 +1,9 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { BossWithDuration } from '../models/gw-boss.model';
 import { BossPage } from '../boss/boss.page';
 import { BossDurationPage } from '../boss-duration/boss-duration.page';
 import { ClockService } from '../services/clock.service';
+import { isBossSlotActive } from '../utils/boss-slot';
 
 @Component({
   selector: 'app-boss-with-duration',
@@ -10,7 +11,15 @@ import { ClockService } from '../services/clock.service';
     <article
       class="encounter"
       [class.encounter--active]="isActive()"
+      [class.encounter--expandable]="hasDetails()"
+      [class.encounter--expanded]="expanded()"
       [attr.aria-current]="isActive() ? 'time' : null"
+      [attr.aria-expanded]="hasDetails() ? expanded() : null"
+      [attr.role]="hasDetails() ? 'button' : null"
+      [attr.tabindex]="hasDetails() ? 0 : null"
+      (click)="toggleExpanded()"
+      (keydown.enter)="toggleExpanded()"
+      (keydown.space)="onSpace($event)"
     >
       @if (isActive()) {
         <span class="encounter__badge">Now</span>
@@ -26,6 +35,8 @@ import { ClockService } from '../services/clock.service';
         <app-boss
           class="encounter__boss"
           [boss]="bossDuration()?.boss"
+          [expanded]="expanded()"
+          [expandable]="hasDetails()"
         ></app-boss>
       </div>
     </article>
@@ -45,6 +56,15 @@ import { ClockService } from '../services/clock.service';
           var(--ion-color-step-150, rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08));
         background: var(--ion-card-background, var(--ion-background-color));
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+
+      .encounter--expandable {
+        cursor: pointer;
+      }
+
+      .encounter--expandable:focus-visible {
+        outline: 2px solid var(--ion-color-primary);
+        outline-offset: 2px;
       }
 
       .encounter--active {
@@ -76,6 +96,7 @@ import { ClockService } from '../services/clock.service';
         font-weight: 700;
         letter-spacing: 0.02em;
         text-transform: uppercase;
+        pointer-events: none;
       }
 
       .encounter__body {
@@ -86,6 +107,7 @@ import { ClockService } from '../services/clock.service';
 
       .encounter__time {
         flex: 0 0 auto;
+        pointer-events: none;
       }
 
       .encounter__boss {
@@ -113,18 +135,30 @@ export class BossWithDurationPage {
   index = input<number>(0);
   bossDuration = input<BossWithDuration>();
 
-  /** Mirrors BossDurationPage slot math so the row can highlight independently. */
-  isActive = computed(() => {
-    const now = this.clock.now();
-    const nowMinutesUTC = now.getUTCHours() * 60 + now.getUTCMinutes();
-    const duration = this.bossDuration()?.duration || 15;
-    const start = (this.index() * duration) % (24 * 60);
-    const end = start + duration;
+  protected readonly expanded = signal(false);
 
-    if (end <= 24 * 60) {
-      return nowMinutesUTC >= start && nowMinutesUTC < end;
-    }
-
-    return nowMinutesUTC >= start || nowMinutesUTC < end - 24 * 60;
+  protected readonly hasDetails = computed(() => {
+    const boss = this.bossDuration()?.boss;
+    return !!(boss?.description || boss?.chatlink);
   });
+
+  isActive = computed(() =>
+    isBossSlotActive(
+      this.index(),
+      this.bossDuration()?.duration || 15,
+      this.clock.now(),
+    ),
+  );
+
+  protected toggleExpanded(): void {
+    if (!this.hasDetails()) {
+      return;
+    }
+    this.expanded.update((value) => !value);
+  }
+
+  protected onSpace(event: Event): void {
+    event.preventDefault();
+    this.toggleExpanded();
+  }
 }
