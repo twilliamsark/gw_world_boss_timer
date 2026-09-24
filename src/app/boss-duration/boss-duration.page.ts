@@ -1,36 +1,63 @@
 import { Component, computed, inject, input } from '@angular/core';
-import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-} from '@ionic/angular';
 import { ClockService } from '../services/clock.service';
 
 @Component({
   selector: 'app-boss-duration',
   template: `
-    <ion-card [class.highlight-card]="isNowBetweenLocalTimes()">
-      <ion-card-header>
-        <ion-card-subtitle>{{ localStartTime() }}</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content> {{ localEndTime() }} </ion-card-content>
-    </ion-card>
+    <div class="time-block" [class.time-block--active]="isActive()">
+      <span class="time-block__start">{{ localStartTime() }}</span>
+      <span class="time-block__sep" aria-hidden="true">–</span>
+      <span class="time-block__end">{{ localEndTime() }}</span>
+      @if (remainingLabel(); as remaining) {
+        <span class="time-block__remaining" aria-live="polite">{{
+          remaining
+        }}</span>
+      }
+    </div>
   `,
   styles: [
     `
       :host {
         display: block;
-        padding: 16px;
       }
 
-      .highlight-card {
-        border: 2px solid #3880ff;
-        background-color: #f0f8ff;
+      .time-block {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        min-width: 4.75rem;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+      }
+
+      .time-block__start {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--ion-text-color);
+      }
+
+      .time-block__sep {
+        display: none;
+      }
+
+      .time-block__end {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium-shade, var(--ion-color-medium));
+      }
+
+      .time-block__remaining {
+        margin-top: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ion-color-primary);
+      }
+
+      .time-block--active .time-block__start {
+        color: var(--ion-color-primary);
       }
     `,
   ],
-  imports: [IonCard, IonCardContent, IonCardHeader, IonCardSubtitle],
 })
 export class BossDurationPage {
   private readonly clock = inject(ClockService);
@@ -41,25 +68,22 @@ export class BossDurationPage {
   minutesSinceMidnightUTC = computed(
     () => this.index() * (this.duration() || 15),
   );
-  startTime = computed(() => {
-    const minutes = this.minutesSinceMidnightUTC();
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-  });
+
   localStartTime = computed(() =>
     this.formatLocalTime(this.minutesSinceMidnightUTC()),
   );
+
   localEndTime = computed(() =>
     this.formatLocalTime(
       this.minutesSinceMidnightUTC() + (this.duration() || 15),
     ),
   );
+
   /**
    * Slots are defined in UTC minutes-since-midnight. Reads `clock.now` so the
    * highlight advances as wall time ticks.
    */
-  isNowBetweenLocalTimes = computed(() => {
+  isActive = computed(() => {
     const now = this.clock.now();
     const nowMinutesUTC = now.getUTCHours() * 60 + now.getUTCMinutes();
     const start = this.minutesSinceMidnightUTC() % (24 * 60);
@@ -74,22 +98,48 @@ export class BossDurationPage {
     return nowMinutesUTC >= start || nowMinutesUTC < end - 24 * 60;
   });
 
+  remainingLabel = computed(() => {
+    if (!this.isActive()) {
+      return null;
+    }
+
+    const now = this.clock.now();
+    const start = this.minutesSinceMidnightUTC() % (24 * 60);
+    const duration = this.duration() || 15;
+    const endTotal = start + duration;
+
+    const endDate = new Date(now);
+    endDate.setUTCSeconds(0, 0);
+    const nowMinutesUTC = now.getUTCHours() * 60 + now.getUTCMinutes();
+
+    if (endTotal <= 24 * 60) {
+      endDate.setUTCHours(Math.floor(endTotal / 60), endTotal % 60, 0, 0);
+    } else {
+      const wrapped = endTotal - 24 * 60;
+      // Still in the pre-midnight portion → end is tomorrow UTC.
+      if (nowMinutesUTC >= start) {
+        endDate.setUTCDate(endDate.getUTCDate() + 1);
+      }
+      endDate.setUTCHours(Math.floor(wrapped / 60), wrapped % 60, 0, 0);
+    }
+
+    const remainingMs = Math.max(0, endDate.getTime() - now.getTime());
+    const totalSeconds = Math.floor(remainingMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes <= 0) {
+      return `${seconds}s left`;
+    }
+
+    return `${minutes}m ${seconds.toString().padStart(2, '0')}s left`;
+  });
+
   private formatLocalTime(minutesSinceMidnightUTC: number): string {
     const hours = Math.floor(minutesSinceMidnightUTC / 60) % 24;
     const mins = minutesSinceMidnightUTC % 60;
     const date = new Date();
     date.setUTCHours(hours, mins, 0, 0);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
-
-  isDaylightSavingTime = computed(() => {
-    const date = new Date();
-    const january = new Date(date.getFullYear(), 0, 1);
-    const july = new Date(date.getFullYear(), 6, 1);
-    const standardTimezoneOffset = Math.max(
-      january.getTimezoneOffset(),
-      july.getTimezoneOffset(),
-    );
-    return date.getTimezoneOffset() < standardTimezoneOffset;
-  });
 }

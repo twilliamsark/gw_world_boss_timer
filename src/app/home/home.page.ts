@@ -34,7 +34,7 @@ const HEADER_SCROLL_OFFSET_PX = 72;
       </ion-header>
 
       @if (events() !== null) {
-        <ul style="list-style-type: none; padding: 0; margin: 0">
+        <ul class="boss-list">
           @for (event of encounters(); track $index; let i = $index) {
             <li #bossItem class="boss-item">
               <app-boss-with-duration
@@ -49,8 +49,18 @@ const HEADER_SCROLL_OFFSET_PX = 72;
   `,
   styles: [
     `
+      .boss-list {
+        list-style: none;
+        margin: 0;
+        padding: 8px 0 calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+
       .boss-item {
-        margin-bottom: 16px;
+        margin-bottom: 10px;
+      }
+
+      .boss-item:last-child {
+        margin-bottom: 0;
       }
     `,
   ],
