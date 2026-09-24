@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular';
 import { BossWithDuration } from '../models/gw-boss.model';
 import { WorldBossTimerService } from '../services/world-boss-timer.service';
-import { BossPage } from '../boss/boss.page';
+import { BossWithDurationPage } from '../boss-with-duration/boss-with-duration.page';
 
 @Component({
   selector: 'app-home',
@@ -22,13 +22,16 @@ import { BossPage } from '../boss/boss.page';
       </ion-header>
 
       @if (events() !== null) {
-        <ol>
-          @for (event of encounters(); track $index) {
+        <ul style="list-style-type: none;">
+          @for (event of encounters(); track $index; let i = $index) {
             <li class="boss-item">
-              <app-boss [boss]="event.boss"></app-boss>
+              <app-boss-with-duration
+                [index]="i"
+                [bossDuration]="event"
+              ></app-boss-with-duration>
             </li>
           }
-        </ol>
+        </ul>
       }
     </ion-content>
   `,
@@ -66,7 +69,7 @@ import { BossPage } from '../boss/boss.page';
       }
     `,
   ],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, BossPage],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, BossWithDurationPage],
 })
 export class HomePage {
   private worldBossTimerService = inject(WorldBossTimerService);

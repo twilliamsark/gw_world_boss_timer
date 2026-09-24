@@ -1,13 +1,26 @@
 import { Component, input } from '@angular/core';
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+} from '@ionic/angular';
+
 import { Boss } from '../models/gw-boss.model';
 
 @Component({
   selector: 'app-boss',
   template: `
-    <ul>
-      <li>{{ boss()?.name }}</li>
-      <li>{{ boss()?.description }}</li>
-    </ul>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ boss()?.name }}</ion-card-title>
+        <ion-card-subtitle>{{ boss()?.chatlink }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        {{ boss()?.description }}
+      </ion-card-content>
+    </ion-card>
   `,
   styles: [
     `
@@ -28,7 +41,13 @@ import { Boss } from '../models/gw-boss.model';
     `,
   ],
   standalone: true,
-  imports: [],
+  imports: [
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardSubtitle,
+    IonCardTitle,
+  ],
 })
 export class BossPage {
   boss = input<Boss>();
