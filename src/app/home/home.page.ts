@@ -79,6 +79,10 @@ const HEADER_SCROLL_OFFSET_PX = 168;
   `,
   styles: [
     `
+      ion-title {
+        text-align: center;
+      }
+
       .now-toolbar {
         --min-height: 0;
         --padding-top: 0;
