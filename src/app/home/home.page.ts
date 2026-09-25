@@ -93,11 +93,13 @@ const HEADER_SCROLL_OFFSET_PX = 168;
         border-top: 1px solid
           rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
         background: rgba(var(--ion-color-primary-rgb), 0.12);
+        text-align: center;
       }
 
       .now-summary__top {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         min-width: 0;
       }
@@ -129,6 +131,7 @@ const HEADER_SCROLL_OFFSET_PX = 168;
         display: flex;
         flex-wrap: wrap;
         align-items: baseline;
+        justify-content: center;
         gap: 8px 12px;
         margin-top: 4px;
         font-size: 0.8rem;
@@ -145,6 +148,7 @@ const HEADER_SCROLL_OFFSET_PX = 168;
         margin: 6px 0 0;
         font-size: 0.8rem;
         line-height: 1.35;
+        text-align: center;
         color: var(--ion-text-color-step-600, var(--ion-color-medium-shade));
         display: -webkit-box;
         -webkit-box-orient: vertical;
