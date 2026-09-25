@@ -11,5 +11,6 @@ export interface BossWithDuration {
 }
 
 export interface CombinedBossSequence {
+  totalMinutes: number;
   encounters: BossWithDuration[];
 }

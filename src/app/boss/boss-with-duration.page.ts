@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { BossWithDuration } from '../models/gw-boss.model';
-import { BossPage } from '../boss/boss.page';
-import { BossDurationPage } from '../boss-duration/boss-duration.page';
+import { BossPage } from './boss.page';
+import { BossDurationPage } from './boss-duration.page';
 import { ClockService } from '../services/clock.service';
 import { isBossSlotActive } from '../utils/boss-slot';
 
@@ -53,7 +53,10 @@ import { isBossSlotActive } from '../utils/boss-slot';
         padding: 12px 14px;
         border-radius: 14px;
         border: 1px solid
-          var(--ion-color-step-150, rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08));
+          var(
+            --ion-color-step-150,
+            rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08)
+          );
         background: var(--ion-card-background, var(--ion-background-color));
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       }

@@ -12,7 +12,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular';
 import { BossWithDuration } from '../models/gw-boss.model';
 import { ClockService } from '../services/clock.service';
 import { WorldBossTimerService } from '../services/world-boss-timer.service';
-import { BossWithDurationPage } from '../boss-with-duration/boss-with-duration.page';
+import { BossWithDurationPage } from '../boss/boss-with-duration.page';
 import {
   bossSlotRemainingLabel,
   bossSlotStartMinutes,
@@ -39,9 +39,7 @@ const HEADER_SCROLL_OFFSET_PX = 168;
               <span class="now-summary__name">{{ active.boss.name }}</span>
             </div>
             <div class="now-summary__meta">
-              <span
-                >{{ activeStartTime() }} – {{ activeEndTime() }}</span
-              >
+              <span>{{ activeStartTime() }} – {{ activeEndTime() }}</span>
               @if (activeRemaining(); as remaining) {
                 <span class="now-summary__remaining">{{ remaining }}</span>
               }
@@ -94,8 +92,7 @@ const HEADER_SCROLL_OFFSET_PX = 168;
       .now-summary {
         width: 100%;
         padding: 10px 16px 12px;
-        border-top: 1px solid
-          rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
+        border-top: 1px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
         background: rgba(var(--ion-color-primary-rgb), 0.12);
         text-align: center;
       }
@@ -162,7 +159,10 @@ const HEADER_SCROLL_OFFSET_PX = 168;
 
       @media (prefers-color-scheme: dark) {
         .now-summary {
-          border-top-color: rgba(var(--ion-text-color-rgb, 255, 255, 255), 0.12);
+          border-top-color: rgba(
+            var(--ion-text-color-rgb, 255, 255, 255),
+            0.12
+          );
           background: rgba(var(--ion-color-primary-rgb), 0.22);
         }
       }
