@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">GW2 World Bosses</string>
+    <string name="title_activity_main">GW2 World Bosses</string>
+    <string name="package_name">com.twilliamsark.gw2worldbosstimer</string>
+    <string name="custom_url_scheme">com.twilliamsark.gw2worldbosstimer</string>
+</resources>

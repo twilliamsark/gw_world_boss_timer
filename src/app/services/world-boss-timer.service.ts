@@ -1,14 +1,11 @@
-import { Injectable, computed, inject } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { Service, computed, inject } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
 import { CombinedBossSequence } from '../models/gw-boss.model';
 import { environment } from '../../environments/environment';
 import { ClockService } from './clock.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class WorldBossTimerService {
   private readonly http = inject(HttpClient);
   private readonly clock = inject(ClockService);
@@ -16,7 +13,7 @@ export class WorldBossTimerService {
 
   /**
    * Stable for an entire UTC calendar day; changes at 00:00 UTC so
-   * `getBossSequence()` re-fetches when the day rolls over.
+   * `bossSequence` re-fetches when the day rolls over.
    */
   private readonly utcDayKey = computed(() => {
     const now = this.clock.now();
@@ -27,11 +24,9 @@ export class WorldBossTimerService {
     );
   });
 
-  private readonly bossSequence$ = toObservable(this.utcDayKey).pipe(
-    switchMap(() => this.http.get<CombinedBossSequence>(this.apiUrl)),
-  );
-
-  getBossSequence(): Observable<CombinedBossSequence> {
-    return this.bossSequence$;
-  }
+  /** Async boss schedule for the current UTC day. */
+  readonly bossSequence = rxResource({
+    params: () => this.utcDayKey(),
+    stream: () => this.http.get<CombinedBossSequence>(this.apiUrl),
+  });
 }

@@ -7,8 +7,14 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonSpinner,
+  IonButton,
+} from '@ionic/angular';
 import { BossWithDuration } from '../models/gw-boss.model';
 import { ClockService } from '../services/clock.service';
 import { WorldBossTimerService } from '../services/world-boss-timer.service';
@@ -61,17 +67,44 @@ const HEADER_SCROLL_OFFSET_PX = 168;
         </ion-toolbar>
       </ion-header>
 
-      @if (events() !== null) {
-        <ul class="boss-list">
-          @for (event of encounters(); track $index; let i = $index) {
-            <li #bossItem class="boss-item">
-              <app-boss-with-duration
-                [index]="i"
-                [bossDuration]="event"
-              ></app-boss-with-duration>
-            </li>
-          }
-        </ul>
+      @if (bossSequence.hasValue()) {
+        @if (encounters().length === 0) {
+          <div class="schedule-status" role="status">
+            <p class="schedule-status__title">No world bosses scheduled</p>
+            <p class="schedule-status__detail">
+              The schedule came back empty. Try again in a moment.
+            </p>
+            <ion-button fill="outline" (click)="retryLoad()">
+              Try again
+            </ion-button>
+          </div>
+        } @else {
+          <ul class="boss-list">
+            @for (event of encounters(); track $index; let i = $index) {
+              <li #bossItem class="boss-item">
+                <app-boss-with-duration
+                  [index]="i"
+                  [bossDuration]="event"
+                ></app-boss-with-duration>
+              </li>
+            }
+          </ul>
+        }
+      } @else if (bossSequence.isLoading()) {
+        <div class="schedule-status" role="status" aria-live="polite">
+          <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+          <p class="schedule-status__title">Loading schedule…</p>
+        </div>
+      } @else {
+        <div class="schedule-status" role="alert">
+          <p class="schedule-status__title">
+            Couldn't load the world boss schedule
+          </p>
+          <p class="schedule-status__detail">
+            Check your connection, then try again.
+          </p>
+          <ion-button (click)="retryLoad()">Try again</ion-button>
+        </div>
       }
     </ion-content>
   `,
@@ -167,6 +200,33 @@ const HEADER_SCROLL_OFFSET_PX = 168;
         }
       }
 
+      .schedule-status {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-height: 40vh;
+        padding: 32px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+        text-align: center;
+        color: var(--ion-text-color);
+      }
+
+      .schedule-status__title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 650;
+        line-height: 1.35;
+      }
+
+      .schedule-status__detail {
+        margin: 0;
+        max-width: 28rem;
+        font-size: 0.9rem;
+        line-height: 1.45;
+        color: var(--ion-color-medium-shade, var(--ion-color-medium));
+      }
+
       .boss-list {
         list-style: none;
         margin: 0;
@@ -182,7 +242,15 @@ const HEADER_SCROLL_OFFSET_PX = 168;
       }
     `,
   ],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, BossWithDurationPage],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonSpinner,
+    IonButton,
+    BossWithDurationPage,
+  ],
 })
 export class HomePage {
   private readonly worldBossTimerService = inject(WorldBossTimerService);
@@ -192,11 +260,13 @@ export class HomePage {
   private readonly bossItems =
     viewChildren<ElementRef<HTMLElement>>('bossItem');
 
-  events = toSignal(this.worldBossTimerService.getBossSequence(), {
-    initialValue: null,
-  });
+  readonly bossSequence = this.worldBossTimerService.bossSequence;
+
   encounters = computed((): BossWithDuration[] => {
-    const sequence = this.events()?.encounters ?? [];
+    if (!this.bossSequence.hasValue()) {
+      return [];
+    }
+    const sequence = this.bossSequence.value().encounters ?? [];
     return [...sequence, ...sequence, ...sequence, ...sequence];
   });
 
@@ -269,6 +339,10 @@ export class HomePage {
         void this.scrollActiveBossToTop(content, el);
       },
     });
+  }
+
+  retryLoad(): void {
+    this.bossSequence.reload();
   }
 
   private async scrollActiveBossToTop(
